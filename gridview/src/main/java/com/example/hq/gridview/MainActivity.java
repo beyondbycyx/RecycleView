@@ -1,11 +1,9 @@
-package com.example.hq.recycleview;
+package com.example.hq.gridview;
 
-import android.app.Activity;
-import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,25 +18,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
-    private RecyclerView recyclerView;
+    private RecyclerView rv;
+
     private RecyclerView.Adapter myAdapter;
     private List<String > mDatas;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //初始化化数据源
+        rv=(RecyclerView)findViewById(R.id.rv);
+
         initDatas();
-        recyclerView=(RecyclerView)findViewById(R.id.rv);
-        //添加布局
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //添加适配器
-        myAdapter=new MyRVAdapter();
-        recyclerView.setAdapter(myAdapter);
-        //添加分割线,只有通过这种add方法才可以设置分割线
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL_LIST));
+        rv.setLayoutManager(new GridLayoutManager(this,2));
+        rv.setAdapter(new MyRVAdapter(this,mDatas));
     }
     public void initDatas()
     {
@@ -49,8 +43,15 @@ public class MainActivity extends Activity {
         }
     }
     //自定义适配器
-      class MyRVAdapter extends RecyclerView.Adapter<MyRVAdapter.MyViewHolder>{
+    class MyRVAdapter extends RecyclerView.Adapter<MyRVAdapter.MyViewHolder>{
 
+        private List<String> mDatas;
+        private Context mcontext;
+        public MyRVAdapter(Context context,List<String> mDatas)
+        {
+            this.mcontext=context;
+            this.mDatas=mDatas;
+        }
         //将数据源数据绑定到viewholder里
         @Override
         public void onBindViewHolder(MyViewHolder myViewHolder, int i) {
@@ -66,7 +67,7 @@ public class MainActivity extends Activity {
 
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            MyViewHolder myViewHolder=new MyViewHolder(LayoutInflater.from(MainActivity.this
+            MyViewHolder myViewHolder=new MyViewHolder(LayoutInflater.from(mcontext
             ).inflate(R.layout.item,viewGroup,false));
             return myViewHolder;
         }
@@ -83,7 +84,7 @@ public class MainActivity extends Activity {
                 tv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.v("------",tv.getText()+"被点击了");
+                        Log.v("------", tv.getText() + "被点击了");
                     }
                 });
                 tv.setOnGenericMotionListener(new View.OnGenericMotionListener() {
@@ -105,6 +106,7 @@ public class MainActivity extends Activity {
 
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
